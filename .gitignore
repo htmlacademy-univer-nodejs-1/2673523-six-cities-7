@@ -12,3 +12,4 @@ coverage
 
 mocks/*.tsv
 !mocks/offers.tsv
+.env
