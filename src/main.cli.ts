@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import 'reflect-metadata';
 import chalk from 'chalk';
 import {CliApp, GenerateCommand, HelpCommand, ImportCommand, VersionCommand} from './cli/index.js';
 

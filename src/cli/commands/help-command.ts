@@ -14,7 +14,8 @@ ${chalk.yellow('Использование:')}
 ${chalk.yellow('Команды:')}
   ${chalk.cyan('--version')}                        вывод номера версии приложения
   ${chalk.cyan('--help')}                           выводит текста по умолчанию
-  ${chalk.cyan('--import')} ${chalk.gray('<path>')}                  импортирует предложения из TSV-файла
+  ${chalk.cyan('--import')} ${chalk.gray('<path> <login> <password> <host> <dbname> <salt>')}
+                                   импортирует предложения из TSV-файла в MongoDB
   ${chalk.cyan('--generate')} ${chalk.gray('<n> <path> <url>')}      генерит TSV-файл с тест данными
 `);
   }

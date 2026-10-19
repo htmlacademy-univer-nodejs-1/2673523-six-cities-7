@@ -86,6 +86,38 @@ npm run mock:server
 npm run cli -- --generate 100 ./mocks/test-data.tsv http://localhost:3123/api
 ```
 
+#### Запустить базу данных
+
+```bash
+docker compose -f docker-compose.dev.yml up -d
+```
+
+Поднимает **MongoDB** на порту `27017` (логин и пароль `aboba`) и **mongo-express** на `http://localhost:8081` для просмотра данных.
+
+#### Импортировать данные в базу
+
+```bash
+npm run cli -- --import <path> <login> <password> <host> <dbname> <salt>
+```
+
+Например:
+
+```bash
+npm run cli -- --import ./mocks/offers.tsv aboba aboba 127.0.0.1 six-cities change-me-to-random-string
+```
+
+### Переменные окружения
+
+Приложение читает настройки из файла `.env` в корне проекта. Скопируйте `.env.example` в `.env` и заполните значения. Все переменные обязательны.
+
+- `PORT=4000` — порт, на котором приложение ожидает подключений;
+- `DB_HOST=127.0.0.1` — IP-адрес сервера базы данных;
+- `DB_PORT=27017` — порт сервера базы данных;
+- `DB_USER=aboba` — логин для подключения к базе данных;
+- `DB_PASSWORD=aboba` — пароль для подключения к базе данных;
+- `DB_NAME=six-cities` — имя базы данных;
+- `SALT=change-me-to-random-string` — соль для хеширования паролей.
+
 ## Структура проекта
 
 ### Директория `src`

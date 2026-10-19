@@ -1,20 +1,17 @@
 import 'reflect-metadata';
 import {Container} from 'inversify';
 import {Component} from './shared/types/index.js';
-import {Logger, PinoLogger} from './shared/libs/logger/index.js';
-import {Config, RestConfig, RestSchema} from './shared/libs/config/index.js';
-import {RestApplication} from './rest/index.js';
-
-function createContainer(): Container {
-  const container = new Container();
-  container.bind<Logger>(Component.Logger).to(PinoLogger).inSingletonScope();
-  container.bind<Config<RestSchema>>(Component.Config).to(RestConfig).inSingletonScope();
-  container.bind<RestApplication>(Component.RestApplication).to(RestApplication).inSingletonScope();
-  return container;
-}
+import {Logger} from './shared/libs/logger/index.js';
+import {createRestContainer, RestApplication} from './rest/index.js';
+import {createUserContainer} from './shared/modules/user/index.js';
+import {createOfferContainer} from './shared/modules/offer/index.js';
 
 async function bootstrap(): Promise<void> {
-  const container = createContainer();
+  const container = Container.merge(
+    createRestContainer(),
+    createUserContainer(),
+    createOfferContainer(),
+  );
   const logger = container.get<Logger>(Component.Logger);
 
   try {

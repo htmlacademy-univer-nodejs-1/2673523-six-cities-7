@@ -1,0 +1,27 @@
+services:
+  db:
+    image: mongo:7
+    restart: always
+    container_name: six-cities_mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: aboba
+      MONGO_INITDB_ROOT_PASSWORD: aboba
+    ports:
+      - 27017:27017
+    volumes:
+      - six-cities_data:/data/db
+
+  db_ui:
+    image: mongo-express:latest
+    restart: always
+    container_name: six-cities_mongo_express
+    depends_on:
+      - db
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://aboba:aboba@db:27017/
+      ME_CONFIG_BASICAUTH: "false"
+
+volumes:
+  six-cities_data:
