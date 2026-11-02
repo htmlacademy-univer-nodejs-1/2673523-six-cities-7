@@ -6,6 +6,7 @@ import {ConsoleLogger, Logger} from '../../shared/libs/logger/index.js';
 import {DatabaseClient, MongoDatabaseClient} from '../../shared/libs/database-client/index.js';
 import {DefaultUserService, UserModel, UserService} from '../../shared/modules/user/index.js';
 import {DefaultOfferService, OfferModel, OfferService} from '../../shared/modules/offer/index.js';
+import {CommentModel} from '../../shared/modules/comment/index.js';
 import {CliCommand} from './cli-command.interface.js';
 
 const DEFAULT_USER_PASSWORD = '123456';
@@ -16,7 +17,7 @@ export class ImportCommand implements CliCommand {
   private readonly logger: Logger = new ConsoleLogger();
   private readonly databaseClient: DatabaseClient = new MongoDatabaseClient(this.logger);
   private readonly userService: UserService = new DefaultUserService(this.logger, UserModel);
-  private readonly offerService: OfferService = new DefaultOfferService(this.logger, OfferModel);
+  private readonly offerService: OfferService = new DefaultOfferService(this.logger, OfferModel, CommentModel);
 
   private async saveOffer(offer: Offer, salt: string): Promise<void> {
     const user = await this.userService.findOrCreate({
@@ -34,7 +35,6 @@ export class ImportCommand implements CliCommand {
       previewImage: offer.previewImage,
       photos: offer.photos,
       isPremium: offer.isPremium,
-      isFavorite: offer.isFavorite,
       rating: offer.rating,
       type: offer.type,
       roomsCount: offer.roomsCount,

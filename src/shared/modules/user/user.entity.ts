@@ -1,6 +1,8 @@
-import {defaultClasses, getModelForClass, modelOptions, prop} from '@typegoose/typegoose';
+import {defaultClasses, getModelForClass, modelOptions, prop, Ref} from '@typegoose/typegoose';
+import {Types} from 'mongoose';
 import {User, UserType} from '../../types/index.js';
 import {createSha256} from '../../helpers/index.js';
+import {OfferEntity} from '../offer/index.js';
 
 @modelOptions({schemaOptions: {collection: 'users', timestamps: true}})
 export class UserEntity extends defaultClasses.TimeStamps implements Omit<User, 'password'> {
@@ -18,6 +20,9 @@ export class UserEntity extends defaultClasses.TimeStamps implements Omit<User, 
 
   @prop({required: true, type: () => String, enum: ['regular', 'pro']})
   public type!: UserType;
+
+  @prop({ref: 'OfferEntity', type: () => [Types.ObjectId], default: []})
+  public favorites!: Ref<OfferEntity>[];
 
   constructor(user: Omit<User, 'password'>) {
     super();

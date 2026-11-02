@@ -5,12 +5,14 @@ import {Logger} from './shared/libs/logger/index.js';
 import {createRestContainer, RestApplication} from './rest/index.js';
 import {createUserContainer} from './shared/modules/user/index.js';
 import {createOfferContainer} from './shared/modules/offer/index.js';
+import {createCommentContainer} from './shared/modules/comment/index.js';
 
 async function bootstrap(): Promise<void> {
   const container = Container.merge(
     createRestContainer(),
     createUserContainer(),
     createOfferContainer(),
+    createCommentContainer(),
   );
   const logger = container.get<Logger>(Component.Logger);
 

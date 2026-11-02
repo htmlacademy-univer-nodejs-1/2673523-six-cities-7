@@ -1,9 +1,12 @@
 import {DocumentType, types} from '@typegoose/typegoose';
 import {inject, injectable} from 'inversify';
+import {isValidObjectId} from 'mongoose';
 import {Component} from '../../types/index.js';
 import {Logger} from '../../libs/logger/index.js';
 import {MongoEntityService} from '../../libs/entity-service/index.js';
+import {OfferEntity} from '../offer/index.js';
 import {CreateUserDto} from './dto/create-user.dto.js';
+import {UpdateUserDto} from './dto/update-user.dto.js';
 import {UserService} from './user-service.interface.js';
 import {UserEntity} from './user.entity.js';
 
@@ -32,5 +35,41 @@ export class DefaultUserService extends MongoEntityService<UserEntity> implement
   public async findOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
     const user = await this.findByEmail(dto.email);
     return user ?? this.create(dto, salt);
+  }
+
+  public async updateById(userId: string, dto: UpdateUserDto): Promise<DocumentType<UserEntity> | null> {
+    if (!isValidObjectId(userId)) {
+      return null;
+    }
+    return this.model.findByIdAndUpdate<DocumentType<UserEntity>>(userId, dto, {new: true}).exec();
+  }
+
+  public async findFavorites(userId: string): Promise<DocumentType<OfferEntity>[]> {
+    if (!isValidObjectId(userId)) {
+      return [];
+    }
+    const user = await this.model
+      .findById(userId)
+      .populate<{favorites: DocumentType<OfferEntity>[]}>('favorites')
+      .exec();
+    return user?.favorites ?? [];
+  }
+
+  public async addToFavorites(userId: string, offerId: string): Promise<DocumentType<UserEntity> | null> {
+    if (!isValidObjectId(userId) || !isValidObjectId(offerId)) {
+      return null;
+    }
+    return this.model
+      .findByIdAndUpdate<DocumentType<UserEntity>>(userId, {$addToSet: {favorites: offerId}}, {new: true})
+      .exec();
+  }
+
+  public async removeFromFavorites(userId: string, offerId: string): Promise<DocumentType<UserEntity> | null> {
+    if (!isValidObjectId(userId) || !isValidObjectId(offerId)) {
+      return null;
+    }
+    return this.model
+      .findByIdAndUpdate<DocumentType<UserEntity>>(userId, {$pull: {favorites: offerId}}, {new: true})
+      .exec();
   }
 }
