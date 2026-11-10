@@ -1,0 +1,8 @@
+### Список избранного
+GET http://localhost:4000/favorites
+
+### Добавить в избранное
+PUT http://localhost:4000/favorites/{{offerId}}
+
+### Убрать из избранного
+DELETE http://localhost:4000/favorites/{{offerId}}

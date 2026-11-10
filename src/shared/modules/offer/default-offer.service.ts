@@ -27,7 +27,7 @@ export class DefaultOfferService extends MongoEntityService<OfferEntity> impleme
   }
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
-    const result = await this.model.create(dto);
+    const result = await this.model.create({...dto, postDate: dto.postDate ?? new Date()});
     this.logger.info(`Создано предложение «${dto.title}»`);
     return result;
   }

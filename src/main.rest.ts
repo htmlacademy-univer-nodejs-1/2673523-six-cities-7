@@ -6,6 +6,7 @@ import {createRestContainer, RestApplication} from './rest/index.js';
 import {createUserContainer} from './shared/modules/user/index.js';
 import {createOfferContainer} from './shared/modules/offer/index.js';
 import {createCommentContainer} from './shared/modules/comment/index.js';
+import {createFavoriteContainer} from './shared/modules/favorite/index.js';
 
 async function bootstrap(): Promise<void> {
   const container = Container.merge(
@@ -13,6 +14,7 @@ async function bootstrap(): Promise<void> {
     createUserContainer(),
     createOfferContainer(),
     createCommentContainer(),
+    createFavoriteContainer(),
   );
   const logger = container.get<Logger>(Component.Logger);
 

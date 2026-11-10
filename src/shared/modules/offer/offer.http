@@ -1,0 +1,46 @@
+### Список предложений
+GET http://localhost:4000/offers?limit=10
+
+### Премиальные предложения для города
+GET http://localhost:4000/offers/premium?city=Paris
+
+### Детальная информация
+GET http://localhost:4000/offers/{{offerId}}
+
+### Создание предложения
+POST http://localhost:4000/offers
+Content-Type: application/json
+
+{
+  "title": "Nice flat in the city centre",
+  "description": "Quiet apartment with a view of the river and a big kitchen.",
+  "city": "Amsterdam",
+  "previewImage": "https://16.design.htmlacademy.pro/static/hotel/1.jpg",
+  "photos": [
+    "https://16.design.htmlacademy.pro/static/hotel/1.jpg",
+    "https://16.design.htmlacademy.pro/static/hotel/2.jpg",
+    "https://16.design.htmlacademy.pro/static/hotel/3.jpg",
+    "https://16.design.htmlacademy.pro/static/hotel/4.jpg",
+    "https://16.design.htmlacademy.pro/static/hotel/5.jpg",
+    "https://16.design.htmlacademy.pro/static/hotel/6.jpg"
+  ],
+  "isPremium": false,
+  "type": "apartment",
+  "roomsCount": 2,
+  "guestsCount": 3,
+  "price": 2500,
+  "amenities": ["Washer", "Fridge"],
+  "authorId": "{{userId}}",
+  "location": {"latitude": 52.370216, "longitude": 4.895168}
+}
+
+### Редактирование предложения
+PATCH http://localhost:4000/offers/{{offerId}}
+Content-Type: application/json
+
+{
+  "price": 3000
+}
+
+### Удаление предложения
+DELETE http://localhost:4000/offers/{{offerId}}
