@@ -11,6 +11,8 @@ export type RestSchema = {
   DB_PASSWORD: string;
   DB_NAME: string;
   SALT: string;
+  UPLOAD_DIRECTORY: string;
+  JWT_SECRET: string;
 };
 
 export const restSchema = convict<RestSchema>({
@@ -54,6 +56,18 @@ export const restSchema = convict<RestSchema>({
     doc: 'Соль хеширования паролей',
     format: String,
     env: 'SALT',
+    default: null,
+  },
+  UPLOAD_DIRECTORY: {
+    doc: 'Директория для пользовательских файлов',
+    format: String,
+    env: 'UPLOAD_DIRECTORY',
+    default: './upload',
+  },
+  JWT_SECRET: {
+    doc: 'Секрет для подписи токенов авторизации',
+    format: String,
+    env: 'JWT_SECRET',
     default: null,
   },
 });

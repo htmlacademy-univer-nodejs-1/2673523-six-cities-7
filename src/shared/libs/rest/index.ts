@@ -6,6 +6,7 @@ export * from './middleware/middleware.interface.js';
 export * from './middleware/validate-object-id.middleware.js';
 export * from './middleware/validate-dto.middleware.js';
 export * from './middleware/document-exists.middleware.js';
+export * from './middleware/authenticate.middleware.js';
 export * from './controller/controller.interface.js';
 export * from './controller/base-controller.js';
 export * from './exception-filter/exception-filter.interface.js';

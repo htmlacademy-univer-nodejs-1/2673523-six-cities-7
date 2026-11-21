@@ -1,6 +1,7 @@
 import express, {Express} from 'express';
 import {inject, injectable} from 'inversify';
 import {Component} from '../shared/types/index.js';
+import {UPLOAD_URL_PATH} from '../shared/constants/index.js';
 import {Logger} from '../shared/libs/logger/index.js';
 import {Config, RestSchema} from '../shared/libs/config/index.js';
 import {DatabaseClient} from '../shared/libs/database-client/index.js';
@@ -35,6 +36,10 @@ export class RestApplication {
 
   private initMiddleware(): void {
     this.server.use(express.json());
+    this.server.use(UPLOAD_URL_PATH, express.static(this.config.get('UPLOAD_DIRECTORY'), {
+      index: false,
+      setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff'),
+    }));
   }
 
   private initControllers(): void {

@@ -26,21 +26,23 @@ export class OfferController extends BaseController {
   constructor(
     @inject(Component.Logger) logger: Logger,
     @inject(Component.OfferService) private readonly offerService: OfferService,
-    @inject(Component.UserService) private readonly userService: UserService,
+    @inject(Component.UserService) userService: UserService,
   ) {
     super(logger);
 
-    const offerMiddlewares = [
-      new ValidateObjectIdMiddleware('offerId'),
-      new DocumentExistsMiddleware(this.offerService, 'Предложение', 'offerId'),
-    ];
+    const validateOfferId = new ValidateObjectIdMiddleware('offerId');
+    const offerExists = new DocumentExistsMiddleware(this.offerService, 'Предложение', 'offerId');
+    const offerMiddlewares = [validateOfferId, offerExists];
 
     this.addRoute({path: '/', method: HttpMethod.Get, handler: this.index});
     this.addRoute({
       path: '/',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateOfferDto)],
+      middlewares: [
+        new ValidateDtoMiddleware(CreateOfferDto),
+        new DocumentExistsMiddleware(userService, 'Пользователь', 'authorId', 'body', StatusCodes.BAD_REQUEST),
+      ],
     });
     this.addRoute({path: '/premium', method: HttpMethod.Get, handler: this.getPremium});
     this.addRoute({path: '/:offerId', method: HttpMethod.Get, handler: this.show, middlewares: offerMiddlewares});
@@ -48,7 +50,7 @@ export class OfferController extends BaseController {
       path: '/:offerId',
       method: HttpMethod.Patch,
       handler: this.update,
-      middlewares: [...offerMiddlewares, new ValidateDtoMiddleware(UpdateOfferDto)],
+      middlewares: [validateOfferId, new ValidateDtoMiddleware(UpdateOfferDto), offerExists],
     });
     this.addRoute({path: '/:offerId', method: HttpMethod.Delete, handler: this.delete, middlewares: offerMiddlewares});
   }
@@ -70,10 +72,6 @@ export class OfferController extends BaseController {
   }
 
   public async create({body}: CreateOfferRequest, res: Response): Promise<void> {
-    if (!(await this.userService.exists(body.authorId))) {
-      throw new HttpError(StatusCodes.BAD_REQUEST, `пользователь ${body.authorId} не найден`, 'OfferController');
-    }
-
     const {id} = await this.offerService.create(body);
     const offer = await this.offerService.findById(id);
     this.created(res, fillDto(OfferRdo, offer));

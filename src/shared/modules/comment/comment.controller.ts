@@ -7,7 +7,6 @@ import {Logger} from '../../libs/logger/index.js';
 import {
   BaseController,
   DocumentExistsMiddleware,
-  HttpError,
   HttpMethod,
   ValidateDtoMiddleware,
   ValidateObjectIdMiddleware,
@@ -24,27 +23,30 @@ export class CommentController extends BaseController {
   constructor(
     @inject(Component.Logger) logger: Logger,
     @inject(Component.CommentService) private readonly commentService: CommentService,
-    @inject(Component.OfferService) private readonly offerService: OfferService,
-    @inject(Component.UserService) private readonly userService: UserService,
+    @inject(Component.OfferService) offerService: OfferService,
+    @inject(Component.UserService) userService: UserService,
   ) {
     super(logger);
 
-    const offerMiddlewares = [
-      new ValidateObjectIdMiddleware('offerId'),
-      new DocumentExistsMiddleware(this.offerService, 'Предложение', 'offerId'),
-    ];
+    const validateOfferId = new ValidateObjectIdMiddleware('offerId');
+    const offerExists = new DocumentExistsMiddleware(offerService, 'Предложение', 'offerId');
 
     this.addRoute({
       path: '/:offerId/comments',
       method: HttpMethod.Get,
       handler: this.index,
-      middlewares: offerMiddlewares,
+      middlewares: [validateOfferId, offerExists],
     });
     this.addRoute({
       path: '/:offerId/comments',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [...offerMiddlewares, new ValidateDtoMiddleware(CreateCommentDto)],
+      middlewares: [
+        validateOfferId,
+        new ValidateDtoMiddleware(CreateCommentDto),
+        offerExists,
+        new DocumentExistsMiddleware(userService, 'Пользователь', 'authorId', 'body', StatusCodes.BAD_REQUEST),
+      ],
     });
   }
 
@@ -54,10 +56,6 @@ export class CommentController extends BaseController {
   }
 
   public async create({params, body}: CreateCommentRequest, res: Response): Promise<void> {
-    if (!(await this.userService.exists(body.authorId))) {
-      throw new HttpError(StatusCodes.BAD_REQUEST, `Пользователь ${body.authorId} не найден`, 'CommentController');
-    }
-
     const comment = await this.commentService.create({...body, offerId: params.offerId});
     this.created(res, fillDto(CommentRdo, comment));
   }
